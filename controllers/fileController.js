@@ -17,3 +17,19 @@ exports.uploadFile = async (req, res, next) => {
 };
 
 
+exports.getFile = async (req, res, next) => {
+    const cid = req.params.cid;
+    const chunks = [];
+    for await (const chunk of ipfs.cat(cid)) {
+        chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
+    const file = buffer.toString();
+    const mimeType = mime.lookup(file);
+    console.log(mimeType)
+    res.writeHead(200, {
+        'Content-Type': mimeType,
+        'Content-Disposition': `attachment; filename=${cid}`
+    });
+    res.end(buffer);
+}
