@@ -10,7 +10,9 @@ const ipfs = require("./ipfsServer")
 
 async function addTextToIPFS(text) {
     const { cid } = await ipfs.add(text);
+    const url = `https://gateway.ipfs.io/ipfs/${cid}`
     console.log(`Text added to IPFS with CID: ${cid}`);
+    console.log(url)
     return cid;
 }
 
