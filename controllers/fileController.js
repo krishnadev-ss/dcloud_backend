@@ -1,6 +1,6 @@
 const ipfs = require("../ipfsServer");
 const mime = require('mime-types');
-const CatchAsyncError = require("../middleware/catchAsynError")
+const CatchAsyncError = require("../middleware/catchAsyncError")
 
 exports.uploadFile = CatchAsyncError( async (req, res, next) => {
     console.log(req.file)

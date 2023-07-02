@@ -1,13 +1,18 @@
 const express = require('express');
 const ethers = require('ethers');
+const bodyParser = require("body-parser");
 
 
 const app = express();
 app.use(express.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 const fileRouter = require("./routes/fileRoute");
+const userRouter = require("./routes/useRoute");
 
 app.use("/api", fileRouter)
+app.use("/api", userRouter)
+
 
 const url = "http://localhost:7545";
 const privateKey = "0x18165d960f3b359d97eaf307f6112d41406398371e74bb9689315c2c7f5b3539";
@@ -18,9 +23,6 @@ const wallet = new ethers.Wallet(privateKey, provider);
 const abi = require("./artifacts/contracts/Lock.sol/SimpleContract.json")
 
 const contract = new ethers.Contract(contractAddress, abi.abi, wallet);
-
-
-
 
 
 app.get("/api/lock", async (req, res) => {
