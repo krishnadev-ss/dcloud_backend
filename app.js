@@ -1,6 +1,7 @@
 const express = require('express');
 const ethers = require('ethers');
 const bodyParser = require("body-parser");
+const errorMiddleWare = require("./middleware/error")
 
 
 const app = express();
@@ -13,26 +14,28 @@ const userRouter = require("./routes/useRoute");
 app.use("/api", fileRouter)
 app.use("/api", userRouter)
 
-
-const url = "http://localhost:7545";
-const privateKey = "0x18165d960f3b359d97eaf307f6112d41406398371e74bb9689315c2c7f5b3539";
-const contractAddress = "0x626145163E5Ed31b48E19369A9568537FEf98E3A";
-
-const provider = new ethers.JsonRpcProvider(url);
-const wallet = new ethers.Wallet(privateKey, provider);
-const abi = require("./artifacts/contracts/Lock.sol/SimpleContract.json")
-
-const contract = new ethers.Contract(contractAddress, abi.abi, wallet);
+app.use(errorMiddleWare);
 
 
-app.get("/api/lock", async (req, res) => {
-
-
-
-    res.json({
-        status: "success",
-    })
-})
+// const url = "http://localhost:7545";
+// const privateKey = "0x18165d960f3b359d97eaf307f6112d41406398371e74bb9689315c2c7f5b3539";
+// const contractAddress = "0x626145163E5Ed31b48E19369A9568537FEf98E3A";
+//
+// const provider = new ethers.JsonRpcProvider(url);
+// const wallet = new ethers.Wallet(privateKey, provider);
+// const abi = require("./artifacts/contracts/Lock.sol/SimpleContract.json")
+//
+// const contract = new ethers.Contract(contractAddress, abi.abi, wallet);
+//
+//
+// app.get("/api/lock", async (req, res) => {
+//
+//
+//
+//     res.json({
+//         status: "success",
+//     })
+// })
 
 
 
