@@ -5,6 +5,8 @@ coverage.json
 typechain
 typechain-types
 
+config/config.env
+
 # Hardhat files
 cache
 artifacts

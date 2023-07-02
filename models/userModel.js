@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const {enableEmoji} = require("hardhat/internal/cli/emoji");
 
 
 const userSchema = new mongoose.Schema({
@@ -33,9 +34,13 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre("save", async function (next) {
     if(!this.isModified("password"))
-        next();
+        return next();
     return await bcrypt.hash(this.password, 10);
-})
+});
+
+userSchema.methods.comparePassword = async function(enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+}
 
 userSchema.methods.getJWTToken = function () {
     return jwt.sign({id: this._id}, process.env.JWT_SECRETE, {
@@ -43,8 +48,6 @@ userSchema.methods.getJWTToken = function () {
     });
 }
 
-userSchema.methods.comparePassword = async function (enteredPassword) {
-    return await bcrypt.comparePassword(enteredPassword, this.password);
-}
+
 
 module.exports = mongoose.model("User", userSchema);

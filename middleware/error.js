@@ -48,7 +48,7 @@ module.exports = (err, req, res, next) => {
 
     res.status(err.statusCode).json({
         success: false,
-        // error: err.stack  //this will tell the exact position where the error occure
-        message: err.message
+        error: err.stack  //this will tell the exact position where the error occure
+        // message: err.message
     })
 }
