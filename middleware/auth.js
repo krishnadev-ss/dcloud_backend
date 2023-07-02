@@ -6,7 +6,7 @@ const User = require("../models/userModel")
 exports.isAuthenticatedUser = CatchAsyncError(async (req, res, next) => {
 
     if(!req.headers.authorization)
-        return next(new Errorandler("no token found", 401));
+        return next(new ErrorHandler("no token found", 401));
 
     const token = req.headers.authorization.split(" ")[1]
 
