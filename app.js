@@ -1,12 +1,14 @@
 const express = require('express');
 const ethers = require('ethers');
 const bodyParser = require("body-parser");
-const errorMiddleWare = require("./middleware/error")
+const cookieParse = require("cookie-parser");
+const errorMiddleWare = require("./middleware/error");
 
 
 const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParse());
 
 const fileRouter = require("./routes/fileRoute");
 const userRouter = require("./routes/useRoute");

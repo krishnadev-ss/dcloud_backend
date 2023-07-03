@@ -15,7 +15,7 @@ exports.registerUser = CatchAsyncError (async (req, res, next) => {
     sendToken(user, 201, res);
 });
 
-exports.userLogin = CatchAsyncError(async (req, res, next) => {
+exports.loginUser = CatchAsyncError(async (req, res, next) => {
 
     const {email, password} = req.body;
 
@@ -33,4 +33,17 @@ exports.userLogin = CatchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("Invalid email or password", 401))
 
     sendToken(user, 200, res);
+});
+
+
+exports.logoutUser = CatchAsyncError(async (req, res, next) => {
+    req.user = null;
+    res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+    })
+
+    res.status(200).json({
+        success: true,
+    })
 });
