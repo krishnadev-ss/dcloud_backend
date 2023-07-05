@@ -2,8 +2,12 @@ const ipfs = require("../ipfsServer");
 const mime = require('mime-types');
 const CatchAsyncError = require("../middleware/catchAsyncError");
 const File = require("../models/fileModel");
+const ErrorHandler = require("../utils/errorHandler");
 
 exports.uploadFile = CatchAsyncError( async (req, res, next) => {
+
+    if(!req.file)
+        return next(new ErrorHandler("Please upload a file", 400));
 
     let addResult = await ipfs.add(req.file.buffer);
     const {cid} = addResult;
@@ -28,6 +32,28 @@ exports.uploadFile = CatchAsyncError( async (req, res, next) => {
 exports.getFile = async (req, res, next) => {
 
     const cid = req.params.cid;
+
+    const owner = await File.findOne({cid}).select("owner");
+
+    if(!owner)
+        return next(new ErrorHandler("File not found", 404));
+
+    const sharedWith = await File.findOne({cid}).select("sharedWith");
+
+
+
+    if(!owner.owner.toString() === req.user._id.toString()) {
+        if(sharedWith) {
+            if(!sharedWith.sharedWith.includes(req.user._id.toString())) {
+                return next(new ErrorHandler("You are not authorized to access this file", 401))
+            }
+
+        }
+        return next(new ErrorHandler("You are not authorized to access this file", 401))
+    }
+
+
+
     const chunks = [];
 
     for await (const chunk of ipfs.cat(cid)) {
