@@ -1,17 +1,26 @@
 const ipfs = require("../ipfsServer");
 const mime = require('mime-types');
-const CatchAsyncError = require("../middleware/catchAsyncError")
+const CatchAsyncError = require("../middleware/catchAsyncError");
+const File = require("../models/fileModel");
 
 exports.uploadFile = CatchAsyncError( async (req, res, next) => {
-    // console.log(req.file)
-    const {cid} = await ipfs.add(req.file.buffer);
+
+    let addResult = await ipfs.add(req.file.buffer);
+    const {cid} = addResult;
     const url = `https://gateway.ipfs.io/ipfs/${cid}`;
-    // console.log(url)
+
+    const file = await File.create({
+        name: req.file.originalname,
+        cid,
+        url,
+        owner: req.user._id,
+        type: req.file.mimetype,
+        size: req.file.size
+    })
 
     res.status(200).json({
         success: true,
-        cid: cid.toString(),
-        url
+        file
     })
 })
 
@@ -37,3 +46,11 @@ exports.getFile = async (req, res, next) => {
 
     res.end(buffer);
 }
+
+exports.getFiles = CatchAsyncError(async (req, res, next) => {
+    const files = await File.find({owner: req.user._id});
+    res.status(200).json({
+        success: true,
+        files
+    })
+})

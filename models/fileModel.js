@@ -10,13 +10,18 @@ const fileSchema = new mongoose.Schema({
     cid: {
         type: String,
         required: true,
+        unique: true,
+    },
+    url: {
+        type: String,
+        required: true,
     },
     createdAt: {
         type: Date,
         default: Date.now()
     },
     owner: {
-        type: String,
+        type: mongoose.Schema.ObjectId,
         required: true,
         ref: "User"
     },
@@ -30,15 +35,14 @@ const fileSchema = new mongoose.Schema({
     },
     path: {
         type: String,
-        required: true
     },
     isPublic: {
         type: Boolean,
-        required: true,
+        default: false
     },
     isShared: {
         type: Boolean,
-        required: true,
+        default: false,
     },
     sharedWith: [
         {
@@ -49,3 +53,5 @@ const fileSchema = new mongoose.Schema({
         },
     ]
 });
+
+module.exports = mongoose.model("File", fileSchema);

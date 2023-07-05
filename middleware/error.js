@@ -2,25 +2,26 @@ const ErrorHandler = require("../utils/errorHandler");
 
 module.exports = (err, req, res, next) => {
 
+
     err.statusCode = err.statusCode|| 500;
     err.message = err.message || "Internal Server Error";
 
-    // if (err.name === 'ValidationError') {
-    //     // Construct a response object with the error details
-    //     const response = {
-    //         status: 'error',
-    //         message: 'Validation failed',
-    //         errors: {}
-    //     };
-    //
-    //     // Loop through each validation error and add it to the response object
-    //     Object.keys(err.errors).forEach(field => {
-    //         response.errors[field] = err.errors[field].message;
-    //     });
-    //
-    //     // Send the response with the appropriate status code
-    //     res.status(400).json(response);
-    // }
+    if (err.name === 'ValidationError') {
+        // Construct a response object with the error details
+        const response = {
+            status: 'error',
+            message: 'Validation failed',
+            errors: {}
+        };
+
+        // Loop through each validation error and add it to the response object
+        Object.keys(err.errors).forEach(field => {
+            response.errors[field] = err.errors[field].message;
+        });
+
+        // Send the response with the appropriate status code
+        res.status(400).json(response);
+    }
 
     //wrong mongodb id error
     if(err.name === "CastError") {
