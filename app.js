@@ -3,18 +3,23 @@ const ethers = require('ethers');
 const bodyParser = require("body-parser");
 const cookieParse = require("cookie-parser");
 const errorMiddleWare = require("./middleware/error");
+const cors = require("cors");
 
 
 const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParse());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
 
 const fileRouter = require("./routes/fileRoute");
 const userRouter = require("./routes/useRoute");
 
 app.use("/api", fileRouter)
-app.use("/api", userRouter)
+app.use("/api/auth", userRouter)
 
 app.use(errorMiddleWare);
 
