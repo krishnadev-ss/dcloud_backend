@@ -41,7 +41,7 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
 exports.getFile = async (req, res, next) => {
 
     const id = req.params.id;
-    console.log(id)
+
     const owner = await File.findById(id).select("owner");
 
     if (!owner)
@@ -70,7 +70,7 @@ exports.getFile = async (req, res, next) => {
 
 exports.downloadFile = async (req, res, next) => {
     const id = req.params.id;
-    console.log(id)
+
     const owner = await File.findById(id).select("owner");
 
     if (!owner)
@@ -123,7 +123,7 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
     if (req.query.keyword) {
         condition.$or = [
             {name: { $regex: req.query.keyword, $options: 'i' }},
-            {type: {$regex: req.query.keyword,$options: 'i'}}
+            {type: {$regex: req.query.keyword ,$options: 'i'}}
         ]
     }
 
