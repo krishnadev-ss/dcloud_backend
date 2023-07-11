@@ -9,16 +9,20 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
     if (!req.file)
         return next(new ErrorHandler("Please upload a file", 400));
 
+    console.log(req.file.mimetype)
+
     let addResult = await ipfs.add(req.file.buffer);
     const {cid} = addResult;
     const url = `https://gateway.ipfs.io/ipfs/${cid}`;
     let type;
-    if (req.file.mimetype === "application/pdf" || req.file.mimetype === "application/msword" || req.file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    if (req.file.mimetype.split("/")[0] === "application")
         type = "document"
-    else if (req.file.mimetype === "image/jpeg" || req.file.mimetype === "image/png" || req.file.mimetype === "image/gif" || req.file.mimetype === "image/tiff" || req.file.mimetype === "image/bmp" || req.file.mimetype === "image/webp" || req.file.mimetype === "image/vnd.microsoft.icon" || req.file.mimetype === "image/svg+xml" || req.file.mimetype === "image/x-icon" || req.file.mimetype === "image/vnd.djvu" || req.file.mimetype === "image/avif" || req.file.mimetype === "image/apng" || req.file.mimetype === "image/flif" || req.file.mimetype === "image/x-portable-pixmap" || req.file.mimetype === "image/x-portable-anymap" || req.file.mimetype === "image/x-portable-bitmap" || req.file.mimetype === "image/x-portable-graymap" || req.file.mimetype === "image/x-portable-arbitrarymap" || req.file.mimetype === "image/x-portable-bitmap" || req.file.mimetype === "image/x-portable-pixmap" || req.file.mimetype === "image/x-portable-anymap" || req.file.mimetype === "image/x-portable-graymap" || req.file.mimetype === "image/x-portable-arbitrarymap")
+    else if (req.file.mimetype.split("/")[0] === "image/jpeg")
         type = "image"
-    else if (req.file.mimetype === "video/mp4" || req.file.mimetype === "video/mpeg" || req.file.mimetype === "video/ogg" || req.file.mimetype === "video/quicktime" || req.file.mimetype === "video/webm" || req.file.mimetype === "video/x-ms-wmv" || req.file.mimetype === "video/x-flv" || req.file.mimetype === "video/x-msvideo" || req.file.mimetype === "video/3gpp" || req.file.mimetype === "video/3gpp2" || req.file.mimetype === "video/x-matroska" || req.file.mimetype === "video/x-m4v" || req.file.mimetype === "video/avi" || req.file.mimetype === "video/x-ms-asf" || req.file.mimetype === "video/x-mpegURL" || req.file.mimetype === "video/MP2T" || req.file.mimetype === "video/x-msvideo" || req.file.mimetype === "video/x-flv" || req.file.mimetype === "video/x-ms-wmv" || req.file.mimetype === "video/x-ms-asf" || req.file.mimetype === "video/x-mpegURL" || req.file.mimetype === "video/MP2T" || req.file.mimetype === "video/x-m4v" || req.file.mimetype === "video/avi" || req.file.mimetype === "video/x-matroska")
+    else if(req.file.mimetype.split("/")[0] === "video")
         type = "video"
+    else if(req.file.mimetype.split("/")[0] === "audio")
+        type = "audio"
     else
         type = "other"
 
