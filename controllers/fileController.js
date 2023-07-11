@@ -134,6 +134,6 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
         count: files.length,
         files
     })
-})
+});
 
 
