@@ -16,7 +16,7 @@ app.use(cors({
 }));
 
 const fileRouter = require("./routes/fileRoute");
-const userRouter = require("./routes/useRoute");
+const userRouter = require("./routes/userRoute");
 
 app.use("/api", fileRouter)
 app.use("/api/auth", userRouter)

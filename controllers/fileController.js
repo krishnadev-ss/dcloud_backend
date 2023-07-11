@@ -32,7 +32,7 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         url,
         owner: req.user._id,
         type,
-        size: req.file.size
+        size: req.file.size/1024
     })
 
     res.status(200).json({

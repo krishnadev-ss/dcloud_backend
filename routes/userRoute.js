@@ -5,8 +5,7 @@ const {registerUser, loginUser, logoutUser} = require("../controllers/userContro
 
 Router.route("/register").post(registerUser);
 Router.route("/login").post(loginUser);
-Router.route("/logout").get(logoutUser);
-
+Router.route("/logout").post(logoutUser);
 
 
 module.exports = Router;

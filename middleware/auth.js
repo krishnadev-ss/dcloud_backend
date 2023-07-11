@@ -5,26 +5,18 @@ const User = require("../models/userModel")
 
 exports.isAuthenticatedUser = CatchAsyncError(async (req, res, next) => {
 
-    if(req.cookies.token) {
-        if(!req.headers.authorization)
-            return next(new ErrorHandler("no token found", 401));
+    const token = req.headers.authorization.split(" ")[1];
 
-        const token = req.cookies.token
+    if (!token) {
+        return next(new ErrorHandler("A token is required for authentication", 403))
+    }
 
-        if(token !== req.headers.authorization.split(" ")[1])
-            return next(new ErrorHandler("Invalid token", 401));
-
-        if(!token || token === "j:null")
-            return next(new ErrorHandler("please login to access this resource", 401));
-
+    try {
         const decodedData = jwt.verify(token, process.env.JWT_SECRETE);
-
         const user = await User.findById(decodedData.id);
         req.user = user
-        next();
+    } catch (err) {
+        return next(new ErrorHandler("Invalid token", 401))
     }
-    else {
-        return next(new ErrorHandler("please login to access this resource", 401));
-    }
-
+    return next();
 });
