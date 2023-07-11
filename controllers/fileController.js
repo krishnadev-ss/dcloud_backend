@@ -19,9 +19,9 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         type = "document"
     else if (req.file.mimetype.split("/")[0] === "image/jpeg")
         type = "image"
-    else if(req.file.mimetype.split("/")[0] === "video")
+    else if (req.file.mimetype.split("/")[0] === "video")
         type = "video"
-    else if(req.file.mimetype.split("/")[0] === "audio")
+    else if (req.file.mimetype.split("/")[0] === "audio")
         type = "audio"
     else
         type = "other"
@@ -126,16 +126,26 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
 
     if (req.query.keyword) {
         condition.$or = [
-            {name: { $regex: req.query.keyword, $options: 'i' }},
-            {type: {$regex: req.query.keyword ,$options: 'i'}}
+            {name: {$regex: req.query.keyword, $options: 'i'}},
+            {type: {$regex: req.query.keyword, $options: 'i'}}
         ]
     }
 
     const files = await File.find(condition);
 
+    const count = {
+        total: files.length,
+        document: files.filter(file => file.type === "document").length,
+        image: files.filter(file => file.type === "image").length,
+        video: files.filter(file => file.type === "video").length,
+        audio: files.filter(file => file.type === "audio").length,
+        other: files.filter(file => file.type === "other").length,
+    }
+
+
     res.status(200).json({
         success: true,
-        count: files.length,
+        count,
         files
     })
 });
