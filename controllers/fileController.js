@@ -142,10 +142,15 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
         other: files.filter(file => file.type === "other").length,
     }
 
+    const storageInBytes = files.reduce((size, file) => file.size + size, 0)
+    const storageInGB = storageInBytes / 1073741824;
+
 
     res.status(200).json({
         success: true,
         count,
+        storageInBytes,
+        storageInGB,
         files
     })
 });
