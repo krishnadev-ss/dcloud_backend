@@ -44,7 +44,7 @@ exports.getFile = async (req, res, next) => {
 
     const id = req.params.id;
     console.log(id)
-    const owner = await File.findOne({id}).select("owner");
+    const owner = await File.findById(id).select("owner");
 
     if(!owner)
         return next(new ErrorHandler("File not found", 404));
@@ -63,16 +63,15 @@ exports.getFile = async (req, res, next) => {
         return next(new ErrorHandler("You are not authorized to access this file", 401))
     }
 
-    const file = await File.findOne({id});
+    const file = await File.findById(id);
 
     res.status(200).json({
         success: true,
         file
-    })
+    });
 }
 
 exports.downloadFile = async (req, res, next) => {
-
     const id = req.params.id;
     console.log(id)
     const owner = await File.findById(id).select("owner");
@@ -91,7 +90,6 @@ exports.downloadFile = async (req, res, next) => {
         }
         return next(new ErrorHandler("You are not authorized to access this file", 401))
     }
-
 
     const file = await File.findById(id);
 

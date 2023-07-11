@@ -6,7 +6,7 @@ const {uploadFile, getFile, getFiles, downloadFile} = require("../controllers/fi
 const {isAuthenticatedUser} = require("../middleware/auth");
 
 Router.route("/upload").post(isAuthenticatedUser, upload.single('file'), uploadFile);
-Router.route("/file/id").get(isAuthenticatedUser, getFile);
+Router.route("/file/:id").get(isAuthenticatedUser, getFile);
 Router.route("/file/:id/download").get(isAuthenticatedUser, downloadFile);
 Router.route("/files").get(isAuthenticatedUser, getFiles);
 
