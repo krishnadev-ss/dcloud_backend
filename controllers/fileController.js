@@ -9,8 +9,6 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
     if (!req.file)
         return next(new ErrorHandler("Please upload a file", 400));
 
-    console.log(req.file.mimetype)
-
     let addResult = await ipfs.add(req.file.buffer);
     const {cid} = addResult;
     const url = `https://gateway.ipfs.io/ipfs/${cid}`;
@@ -39,6 +37,15 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         success: true,
         file
     })
+
+    // const fileName = req.params.fileName
+    //
+    // req.on('data', chunk => {
+    //     fs.appendFileSync(fileName, chunk); // append to a file on the disk
+    // })
+    //
+    // res.send("df")
+
 })
 
 
@@ -116,10 +123,13 @@ exports.downloadFile = async (req, res, next) => {
 
 exports.getFiles = CatchAsyncError(async (req, res, next) => {
 
+
     const condition = {}
 
     if (req.query.type)
         condition.type = req.query.type;
+
+    condition.owner = req.user._id
 
     if (req.query.shared)
         condition.sharedWith = req.user._id;
@@ -133,6 +143,11 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
 
     const files = await File.find(condition);
 
+    // sort files by date
+    files.sort((a, b) => {
+        return b.createdAt - a.createdAt;
+    })
+
     const count = {
         total: files.length,
         document: files.filter(file => file.type === "document").length,
@@ -144,6 +159,7 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
 
     const storageInBytes = files.reduce((size, file) => file.size + size, 0)
     const storageInGB = storageInBytes / 1073741824;
+
 
 
     res.status(200).json({
