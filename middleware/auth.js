@@ -5,6 +5,10 @@ const User = require("../models/userModel")
 
 exports.isAuthenticatedUser = CatchAsyncError(async (req, res, next) => {
 
+    if (!req.headers.authorization || !req.headers.authorization.startsWith("Bearer")) {
+        return next(new ErrorHandler("A token is required for authentication", 403))
+    }
+
     const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {

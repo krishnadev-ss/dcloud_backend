@@ -10,8 +10,10 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("Please upload a file", 400));
 
     let addResult = await ipfs.add(req.file.buffer);
+    console.log(addResult)
     const {cid} = addResult;
     const url = `https://gateway.ipfs.io/ipfs/${cid}`;
+
     let type;
     if (req.file.mimetype.split("/")[0] === "application")
         type = "document"
@@ -80,26 +82,31 @@ exports.getFile = async (req, res, next) => {
 }
 
 exports.downloadFile = async (req, res, next) => {
-    const id = req.params.id;
 
-    const owner = await File.findById(id).select("owner");
 
-    if (!owner)
-        return next(new ErrorHandler("File not found", 404));
 
-    const sharedWith = await File.findOne({id}).select("sharedWith");
+    console.log(req.params)
 
-    if (!owner.owner.toString() === req.user._id.toString()) {
-        if (sharedWith) {
-            if (!sharedWith.sharedWith.includes(req.user._id.toString())) {
-                return next(new ErrorHandler("You are not authorized to access this file", 401))
-            }
+    const id = req.params.cid;
 
-        }
-        return next(new ErrorHandler("You are not authorized to access this file", 401))
-    }
+    // const owner = await File.findById(id).select("owner");
 
-    const file = await File.findById(id);
+    // if (!owner)
+    //     return next(new ErrorHandler("File not found", 404));
+    //
+    // const sharedWith = await File.findOne({id}).select("sharedWith");
+    //
+    // if (!owner.owner.toString() === req.user._id.toString()) {
+    //     if (sharedWith) {
+    //         if (!sharedWith.sharedWith.includes(req.user._id.toString())) {
+    //             return next(new ErrorHandler("You are not authorized to access this file", 401))
+    //         }
+    //
+    //     }
+    //     return next(new ErrorHandler("You are not authorized to access this file", 401))
+    // }
+
+    const file = await File.findOne({cid: id});
 
     const chunks = [];
 
@@ -159,8 +166,6 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
 
     const storageInBytes = files.reduce((size, file) => file.size + size, 0)
     const storageInGB = storageInBytes / 1073741824;
-
-
 
     res.status(200).json({
         success: true,
