@@ -25,6 +25,14 @@ const userSchema = new mongoose.Schema({
         minLength: [8, 'Your password must be longer than 8 characters'],
         select: false,
     },
+    avatar: {
+        public_id: {
+            type: String,
+        },
+        url: {
+            type: String,
+        },
+    },
     createdAt: {
         type: Date,
         default: Date.now()
