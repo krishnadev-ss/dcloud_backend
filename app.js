@@ -8,7 +8,10 @@ const fileUpload = require("express-fileupload")
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
 app.use(express.json()); // This is a middleware that allows us to accept json data in the body
 app.use(cookieParse());
 app.use(bodyParser.urlencoded({extended: true}));
