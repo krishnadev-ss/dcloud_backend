@@ -15,7 +15,6 @@ app.use(cors({
 app.use(express.json()); // This is a middleware that allows us to accept json data in the body
 app.use(cookieParse());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(fileUpload());
 
 
 // ANSI escape sequences for colors and styles
