@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 const cookieParse = require("cookie-parser");
 const errorMiddleWare = require("./middleware/error");
 const cors = require("cors");
-const fileUpload = require("express-fileupload")
 
 const app = express();
 
