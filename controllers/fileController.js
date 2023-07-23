@@ -47,15 +47,6 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         success: true,
         file
     })
-
-    // const fileName = req.params.fileName
-    //
-    // req.on('data', chunk => {
-    //     fs.appendFileSync(fileName, chunk); // append to a file on the disk
-    // })
-    //
-    // res.send("df")
-
 })
 
 
@@ -94,23 +85,6 @@ exports.downloadFile = async (req, res, next) => {
     console.log(req.params)
 
     const id = req.params.cid;
-
-    // const owner = await File.findById(id).select("owner");
-    //
-    // if (!owner)
-    //     return next(new ErrorHandler("File not found", 404));
-    //
-    // const sharedWith = await File.findOne({id}).select("sharedWith");
-    //
-    // if (!owner.owner.toString() === req.user._id.toString()) {
-    //     if (sharedWith) {
-    //         if (!sharedWith.sharedWith.includes(req.user._id.toString())) {
-    //             return next(new ErrorHandler("You are not authorized to access this file", 401))
-    //         }
-    //
-    //     }
-    //     return next(new ErrorHandler("You are not authorized to access this file", 401))
-    // }
 
     const file = await File.findOne({cid: id});
 
@@ -178,13 +152,14 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
         other: files.filter(file => file.type === "other").length,
     }
 
-    const storageInBytes = files.reduce((size, file) => file.size + size, 0)
-    const storageInGB = storageInBytes / 1073741824;
+    const storageInMB = files.reduce((acc, file) => acc + file.size, 0)
+
+    const storageInGB = storageInMB / 1024;
 
     res.status(200).json({
         success: true,
         count,
-        storageInBytes,
+        storageInMB,
         storageInGB,
         images,
         videos,
