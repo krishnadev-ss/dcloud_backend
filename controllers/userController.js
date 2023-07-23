@@ -61,12 +61,11 @@ exports.getUser = CatchAsyncError(async (req, res, next) => {
 exports.updateUser = CatchAsyncError(async (req, res, next) => {
 
     let user = await User.findById(req.user._id);
-    console.log(user)
     if (!user)
         return next(new ErrorHandler("user not found", 400))
 
     let newData;
-    if (!req.body.avatar) {
+    if (!req.body.avatar || req.body.avatar === "[object Object]") {
         newData = {
             email: req.body.email,
             name: req.body.name
@@ -87,14 +86,13 @@ exports.updateUser = CatchAsyncError(async (req, res, next) => {
             }
         };
     }
-
     user = await User.findByIdAndUpdate(req.user._id, newData, {
         new: true,
         runValidators: true,
         useFindAndModify: false
     });
 
-    console.log(user)
+    // console.log(user)
 
     res.status(200).json({
         success: true,
