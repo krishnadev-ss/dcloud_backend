@@ -202,12 +202,12 @@ exports.shareFile = CatchAsyncError(async (req, res, next) => {
     const email = req.body.shareEmail;
 
 
-    if(email === req.user.email)
+    if (email === req.user.email)
         return next(new ErrorHandler("You cannot share file with yourself", 400))
 
     const sharedUser = await User.findOne({email})
 
-    if(!sharedUser)
+    if (!sharedUser)
         return next(new ErrorHandler("User not found", 404))
 
     const owner = await File.findById(id).select("owner");
@@ -223,7 +223,7 @@ exports.shareFile = CatchAsyncError(async (req, res, next) => {
     const file = await File.findById(id);
 
     file.sharedWith.map(user => {
-        if(user.sharedUser.toString() === sharedUser._id.toString())
+        if (user.sharedUser.toString() === sharedUser._id.toString())
             return next(new ErrorHandler("File already shared with this user", 400))
     })
 
@@ -266,21 +266,15 @@ exports.removeFromShare = CatchAsyncError(async (req, res, next) => {
 
     const file = await File.findById(id);
 
-    if(!file)
+    if (!file)
         return next(new ErrorHandler("No shared files found", 404))
 
-    // console.log(req.user)
-    // file.sharedWith.filter((file) => file.sharedUser.toString() === req.user._id.toString())
-
-    const newFile = await File.findOneAndUpdate(id, {
-        $pullAll : {
-            sharedWith: [{sharedUser: req.user._id}],
-        }
-    })
+    await File.updateOne(
+        {_id: id},
+        {$pull: {sharedWith: {sharedUser: req.user._id}}})
 
     res.status(200).json({
         success: true,
-        newFile
     });
 })
 
