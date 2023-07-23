@@ -253,7 +253,7 @@ exports.addToFavourite = CatchAsyncError(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        file
+        message: `${file.isFavorite ? "Added to" : "Removed from"} favourite successfully`
     })
 });
 
