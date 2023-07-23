@@ -2,6 +2,7 @@ const ipfs = require("../ipfsServer");
 const mime = require('mime-types');
 const CatchAsyncError = require("../middleware/catchAsyncError");
 const File = require("../models/fileModel");
+const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 
 exports.uploadFile = CatchAsyncError(async (req, res, next) => {
@@ -197,10 +198,22 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
 
 exports.shareFile = CatchAsyncError(async (req, res, next) => {
 
+    console.log(req.user)
+
     const id = req.params.id;
-    // const {sharedWith} = req.body;
+    const email = req.body.sharedWith;
+
+    if(email === req.user.email)
+        return next(new ErrorHandler("You cannot share file with yourself", 400))
+
+    const sharedUser = await User.findOne({email})
+
+    if(!sharedUser)
+        return next(new ErrorHandler("User not found", 404))
 
     const owner = await File.findById(id).select("owner");
+
+    console.log(owner)
 
     if (!owner)
         return next(new ErrorHandler("File not found", 404));
@@ -208,21 +221,45 @@ exports.shareFile = CatchAsyncError(async (req, res, next) => {
     if (owner.owner.toString() !== req.user._id.toString())
         return next(new ErrorHandler("You are not authorized to share this file", 401))
 
-    const sharedWith = await File.findById(id);
-    console.log(sharedWith)
+    const file = await File.findById(id);
 
-    if (sharedWith.sharedWith.includes(req.body.sharedWith))
-        return next(new ErrorHandler("File already shared with this user", 400))
+    file.sharedWith.map(user => {
+        if(user.sharedUser.toString() === sharedUser._id.toString())
+            return next(new ErrorHandler("File already shared with this user", 400))
+    })
 
-    sharedWith.sharedWith.push(req.body.sharedWith);
+    file.sharedWith.push({sharedUser: sharedUser._id});
 
-    await sharedWith.save();
+    await file.save();
 
     res.status(200).json({
         success: true,
-        sharedWith
+        file
     })
 })
+
+exports.getSharedFiles = CatchAsyncError(async (req, res, next) => {
+
+    const files = await File.find({"sharedWith.sharedUser": req.user._id})
+
+    if (!files)
+        return next(new ErrorHandler("No shared files found", 404))
+
+    const count = {
+        total: files.length,
+        document: files.filter(file => file.type === "document").length,
+        image: files.filter(file => file.type === "image").length,
+        video: files.filter(file => file.type === "video").length,
+        audio: files.filter(file => file.type === "audio").length,
+        other: files.filter(file => file.type === "other").length,
+    }
+
+    res.status(200).json({
+        success: true,
+        count,
+        files
+    })
+});
 
 
 exports.deleteFile = CatchAsyncError(async (req, res, next) => {
@@ -284,7 +321,7 @@ exports.getFavouriteFiles = CatchAsyncError(async (req, res, next) => {
 
     const files = await File.find({isFavorite: true, owner: req.user._id});
 
-    if(!files)
+    if (!files)
         return next(new ErrorHandler("No favourite files found", 404))
 
     const count = {
@@ -302,30 +339,6 @@ exports.getFavouriteFiles = CatchAsyncError(async (req, res, next) => {
         files
     })
 });
-
-exports.getSharedFiles = CatchAsyncError(async (req, res, next) => {
-
-        const files = await File.find({sharedWith: req.user._id});
-
-        if(!files)
-            return next(new ErrorHandler("No shared files found", 404))
-
-        const count = {
-            total: files.length,
-            document: files.filter(file => file.type === "document").length,
-            image: files.filter(file => file.type === "image").length,
-            video: files.filter(file => file.type === "video").length,
-            audio: files.filter(file => file.type === "audio").length,
-            other: files.filter(file => file.type === "other").length,
-        }
-
-        res.status(200).json({
-            success: true,
-            count,
-            files
-        })
-});
-
 
 exports.searchFiles = CatchAsyncError(async (req, res, next) => {
 

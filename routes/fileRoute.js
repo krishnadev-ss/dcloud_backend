@@ -1,7 +1,9 @@
 const express = require("express");
 const Router = express.Router();
 const multer = require('multer');
-const {uploadFile, getFile, getFiles, downloadFile, addToFavourite, getFavouriteFiles, deleteFile, searchFiles} = require("../controllers/fileController")
+const {uploadFile, getFile, getFiles, downloadFile, addToFavourite, getFavouriteFiles, deleteFile, searchFiles,
+    getSharedFiles, shareFile
+} = require("../controllers/fileController")
 const {isAuthenticatedUser} = require("../middleware/auth");
 
 const upload = multer();
@@ -14,6 +16,9 @@ Router.route("/file/addtofavorite/:id").post(isAuthenticatedUser, addToFavourite
 Router.route("/files/favorites").get(isAuthenticatedUser, getFavouriteFiles);
 Router.route("/file/delete/:id").delete(isAuthenticatedUser, deleteFile);
 Router.route("/files/search").get(isAuthenticatedUser, searchFiles);
+Router.route("/file/share/:id").post(isAuthenticatedUser, shareFile);
+Router.route("/files/shared").get(isAuthenticatedUser, getSharedFiles);
+
 
 
 module.exports = Router;

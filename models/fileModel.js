@@ -49,10 +49,10 @@ const fileSchema = new mongoose.Schema({
     },
     sharedWith: [
         {
-            type: String,
-            required: true,
-            ref: "User"
-
+            sharedUser: {
+                type: mongoose.Schema.ObjectId,
+                ref: "User"
+            }
         },
     ]
 });
