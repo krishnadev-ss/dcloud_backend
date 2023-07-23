@@ -212,7 +212,7 @@ exports.shareFile = CatchAsyncError(async (req, res, next) => {
 
 exports.deleteFile = CatchAsyncError(async (req, res, next) => {
 
-    const {id, cid} = req.body;
+    const id = req.params.id;
 
     const owner = await File.findById(id).select("owner");
 
@@ -222,9 +222,9 @@ exports.deleteFile = CatchAsyncError(async (req, res, next) => {
     if (!owner.owner.toString() === req.user._id.toString())
         return next(new ErrorHandler("You are not authorized to delete this file", 401))
 
-    await File.findByIdAndDelete(id);
-
-    ipfs.pin.rm(cid, (err, pinset) => {
+    const deleteFile = await File.findByIdAndDelete(id);
+    console.log(deleteFile)
+    ipfs.pin.rm(deleteFile.cid, (err, pinset) => {
         if (err) {
             res.status(400).json({
                 success: false,
