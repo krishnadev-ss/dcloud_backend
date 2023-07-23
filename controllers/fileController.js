@@ -199,3 +199,12 @@ exports.addToFavourite = CatchAsyncError(async (req, res, next) => {
 });
 
 
+exports.getFavouriteFiles = CatchAsyncError(async (req, res, next) => {
+    const files = await File.find({isFavorite: true});
+
+    res.status(200).json({
+        success: true,
+        files
+    })
+});
+
