@@ -10,14 +10,14 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("Please upload a file", 400));
 
     let addResult = await ipfs.add(req.file.buffer);
-    console.log(addResult)
+
     const {cid} = addResult;
     const url = `https://gateway.ipfs.io/ipfs/${cid}`;
 
     let type;
     if (req.file.mimetype.split("/")[0] === "application")
         type = "document"
-    else if (req.file.mimetype.split("/")[0] === "image/jpeg")
+    else if (req.file.mimetype.split("/")[0] === "image")
         type = "image"
     else if (req.file.mimetype.split("/")[0] === "video")
         type = "video"
@@ -32,7 +32,7 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         url,
         owner: req.user._id,
         type,
-        size: req.file.size/1024
+        size: req.file.size / 1024
     })
 
     res.status(200).json({
@@ -83,14 +83,12 @@ exports.getFile = async (req, res, next) => {
 
 exports.downloadFile = async (req, res, next) => {
 
-
-
     console.log(req.params)
 
     const id = req.params.cid;
 
     // const owner = await File.findById(id).select("owner");
-
+    //
     // if (!owner)
     //     return next(new ErrorHandler("File not found", 404));
     //
@@ -173,6 +171,30 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
         storageInBytes,
         storageInGB,
         files
+    })
+});
+
+exports.addToFavourite = CatchAsyncError(async (req, res, next) => {
+
+    const id = req.params.id;
+
+    const owner = await File.findById(id).select("owner");
+
+    if (!owner)
+        return next(new ErrorHandler("File not found", 404));
+
+    if (!owner.owner.toString() === req.user._id.toString())
+        return next(new ErrorHandler("You are not authorized to add this file to favourite", 401))
+
+    const file = await File.findById(id);
+
+    file.isFavorite = !file.isFavorite;
+
+    await file.save();
+
+    res.status(200).json({
+        success: true,
+        file
     })
 });
 

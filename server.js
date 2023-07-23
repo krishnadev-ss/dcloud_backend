@@ -9,7 +9,6 @@ process.on("uncaughtException", err => {
     process.exit(1);
 })
 
-
 dotenv.config({path: "config/config.env"})
 connectDB();
 

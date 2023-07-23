@@ -1,5 +1,4 @@
 const express = require('express');
-const ethers = require('ethers');
 const bodyParser = require("body-parser");
 const cookieParse = require("cookie-parser");
 const errorMiddleWare = require("./middleware/error");
@@ -14,6 +13,7 @@ app.use(cors({
 app.use(express.json()); // This is a middleware that allows us to accept json data in the body
 app.use(cookieParse());
 app.use(bodyParser.urlencoded({extended: true}));
+
 
 
 // ANSI escape sequences for colors and styles
