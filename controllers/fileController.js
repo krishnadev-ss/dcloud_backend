@@ -198,10 +198,9 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
 
 exports.shareFile = CatchAsyncError(async (req, res, next) => {
 
-    console.log(req.user)
-
     const id = req.params.id;
-    const email = req.body.sharedWith;
+    const email = req.body.shareEmail;
+
 
     if(email === req.user.email)
         return next(new ErrorHandler("You cannot share file with yourself", 400))
@@ -260,6 +259,30 @@ exports.getSharedFiles = CatchAsyncError(async (req, res, next) => {
         files
     })
 });
+
+exports.removeFromShare = CatchAsyncError(async (req, res, next) => {
+
+    const id = req.params.id;
+
+    const file = await File.findById(id);
+
+    if(!file)
+        return next(new ErrorHandler("No shared files found", 404))
+
+    // console.log(req.user)
+    // file.sharedWith.filter((file) => file.sharedUser.toString() === req.user._id.toString())
+
+    const newFile = await File.findOneAndUpdate(id, {
+        $pullAll : {
+            sharedWith: [{sharedUser: req.user._id}],
+        }
+    })
+
+    res.status(200).json({
+        success: true,
+        newFile
+    });
+})
 
 
 exports.deleteFile = CatchAsyncError(async (req, res, next) => {

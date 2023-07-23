@@ -2,7 +2,7 @@ const express = require("express");
 const Router = express.Router();
 const multer = require('multer');
 const {uploadFile, getFile, getFiles, downloadFile, addToFavourite, getFavouriteFiles, deleteFile, searchFiles,
-    getSharedFiles, shareFile
+    getSharedFiles, shareFile, removeFromShare
 } = require("../controllers/fileController")
 const {isAuthenticatedUser} = require("../middleware/auth");
 
@@ -18,6 +18,7 @@ Router.route("/file/delete/:id").delete(isAuthenticatedUser, deleteFile);
 Router.route("/files/search").get(isAuthenticatedUser, searchFiles);
 Router.route("/file/share/:id").post(isAuthenticatedUser, shareFile);
 Router.route("/files/shared").get(isAuthenticatedUser, getSharedFiles);
+Router.route("/file/shared/remove/:id").delete(isAuthenticatedUser, removeFromShare);
 
 
 
