@@ -174,6 +174,37 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
     })
 });
 
+
+exports.shareFile = CatchAsyncError(async (req, res, next) => {
+
+    const id = req.params.id;
+
+    const owner = await File.findById(id).select("owner");
+
+    if (!owner)
+        return next(new ErrorHandler("File not found", 404));
+
+    if (!owner.owner.toString() === req.user._id.toString())
+        return next(new ErrorHandler("You are not authorized to share this file", 401))
+
+    const sharedWith = await File.findOne({id}).select("sharedWith");
+
+    if (sharedWith.sharedWith.includes(req.body.sharedWith))
+        return next(new ErrorHandler("File already shared with this user", 400))
+
+    sharedWith.sharedWith.push(req.body.sharedWith);
+
+    await sharedWith.save();
+
+    res.status(200).json({
+        success: true,
+        sharedWith
+    })
+})
+
+
+
+
 exports.addToFavourite = CatchAsyncError(async (req, res, next) => {
 
     const id = req.params.id;
