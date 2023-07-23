@@ -39,7 +39,7 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         url,
         owner: req.user._id,
         type,
-        size: req.file.size / 1024
+        size: req.file.size / (1024 * 1024)
     })
 
     res.status(200).json({
@@ -162,7 +162,7 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
         files: files.filter(file => file.type === "document")
     }
 
-    const other = {
+    const others = {
         total: files.filter(file => file.type === "other").length,
         files: files.filter(file => file.type === "other")
     }
@@ -189,7 +189,7 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
         videos,
         audios,
         documents,
-        other,
+        others,
         files
     })
 });
@@ -198,16 +198,18 @@ exports.getFiles = CatchAsyncError(async (req, res, next) => {
 exports.shareFile = CatchAsyncError(async (req, res, next) => {
 
     const id = req.params.id;
+    // const {sharedWith} = req.body;
 
     const owner = await File.findById(id).select("owner");
 
     if (!owner)
         return next(new ErrorHandler("File not found", 404));
 
-    if (!owner.owner.toString() === req.user._id.toString())
+    if (owner.owner.toString() !== req.user._id.toString())
         return next(new ErrorHandler("You are not authorized to share this file", 401))
 
-    const sharedWith = await File.findOne({id}).select("sharedWith");
+    const sharedWith = await File.findById(id);
+    console.log(sharedWith)
 
     if (sharedWith.sharedWith.includes(req.body.sharedWith))
         return next(new ErrorHandler("File already shared with this user", 400))
@@ -299,6 +301,29 @@ exports.getFavouriteFiles = CatchAsyncError(async (req, res, next) => {
         count,
         files
     })
+});
+
+exports.getSharedFiles = CatchAsyncError(async (req, res, next) => {
+
+        const files = await File.find({sharedWith: req.user._id});
+
+        if(!files)
+            return next(new ErrorHandler("No shared files found", 404))
+
+        const count = {
+            total: files.length,
+            document: files.filter(file => file.type === "document").length,
+            image: files.filter(file => file.type === "image").length,
+            video: files.filter(file => file.type === "video").length,
+            audio: files.filter(file => file.type === "audio").length,
+            other: files.filter(file => file.type === "other").length,
+        }
+
+        res.status(200).json({
+            success: true,
+            count,
+            files
+        })
 });
 
 
