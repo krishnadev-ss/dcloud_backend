@@ -12,6 +12,13 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
     let addResult = await ipfs.add(req.file.buffer);
 
     const {cid} = addResult;
+
+    const isFileExists = await File.findOne({owner: req.user._id, cid});
+    console.log(isFileExists)
+    if (isFileExists)
+        return next(new ErrorHandler("File already exists", 400));
+
+
     const url = `https://gateway.ipfs.io/ipfs/${cid}`;
 
     let type;

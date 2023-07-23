@@ -10,7 +10,7 @@ Router.route("/upload").post(isAuthenticatedUser, upload.single('file'), uploadF
 Router.route("/file/:id").get(isAuthenticatedUser, getFile);
 Router.route("/file/download/:cid").get( downloadFile);
 Router.route("/files").get(isAuthenticatedUser, getFiles);
-Router.route("/addtofavorite/:id").post(isAuthenticatedUser, addToFavourite);
+Router.route("/file/addtofavorite/:id").post(isAuthenticatedUser, addToFavourite);
 Router.route("/files/favorites").get(isAuthenticatedUser, getFavouriteFiles);
 
 

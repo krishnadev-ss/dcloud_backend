@@ -10,7 +10,6 @@ const fileSchema = new mongoose.Schema({
     cid: {
         type: String,
         required: true,
-        unique: true,
     },
     url: {
         type: String,
