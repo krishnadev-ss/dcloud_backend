@@ -268,9 +268,56 @@ exports.addToFavourite = CatchAsyncError(async (req, res, next) => {
 exports.getFavouriteFiles = CatchAsyncError(async (req, res, next) => {
     const files = await File.find({isFavorite: true});
 
+    const count = {
+        total: files.length,
+        document: files.filter(file => file.type === "document").length,
+        image: files.filter(file => file.type === "image").length,
+        video: files.filter(file => file.type === "video").length,
+        audio: files.filter(file => file.type === "audio").length,
+        other: files.filter(file => file.type === "other").length,
+    }
+
     res.status(200).json({
         success: true,
+        count,
         files
     })
 });
+
+
+exports.searchFiles = CatchAsyncError(async (req, res, next) => {
+
+        const condition = {}
+
+        if (req.query.type)
+            condition.type = req.query.type;
+
+        if (req.query.keyword) {
+            condition.$or = [
+                {name: {$regex: req.query.keyword, $options: 'i'}},
+                {type: {$regex: req.query.keyword, $options: 'i'}}
+            ]
+        }
+
+        const files = await File.find(condition);
+
+        files.sort((a, b) => {
+            return b.createdAt - a.createdAt;
+        })
+
+        const count = {
+            total: files.length,
+            document: files.filter(file => file.type === "document").length,
+            image: files.filter(file => file.type === "image").length,
+            video: files.filter(file => file.type === "video").length,
+            audio: files.filter(file => file.type === "audio").length,
+            other: files.filter(file => file.type === "other").length,
+        }
+
+        res.status(200).json({
+            success: true,
+            count,
+            files
+        })
+})
 
