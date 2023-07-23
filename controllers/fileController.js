@@ -203,6 +203,34 @@ exports.shareFile = CatchAsyncError(async (req, res, next) => {
 })
 
 
+exports.deleteFile = CatchAsyncError(async (req, res, next) => {
+
+    const {id, cid} = req.body;
+
+    const owner = await File.findById(id).select("owner");
+
+    if (!owner)
+        return next(new ErrorHandler("File not found", 404));
+
+    if (!owner.owner.toString() === req.user._id.toString())
+        return next(new ErrorHandler("You are not authorized to delete this file", 401))
+
+    await File.findByIdAndDelete(id);
+
+    ipfs.pin.rm(cid, (err, pinset) => {
+        if (err) {
+            res.status(400).json({
+                success: false,
+                message: "Error deleting file"
+            })
+        }
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "File deleted successfully"
+    })
+})
 
 
 exports.addToFavourite = CatchAsyncError(async (req, res, next) => {
