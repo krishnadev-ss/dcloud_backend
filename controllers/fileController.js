@@ -20,7 +20,7 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("File already exists", 400));
 
 
-    const url = `https://gateway.ipfs.io/ipfs/${cid}`;
+    const url = `https://gateway.ipfs.io/ipfs/${cid}?filename=${encodeURIComponent(req.file.originalname)}`;
 
     let type;
     if (req.file.mimetype.split("/")[0] === "application")
