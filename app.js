@@ -10,13 +10,13 @@ app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true,
 }));
-app.use(express.json()); // This is a middleware that allows us to accept json data in the body
+app.use(express.json());
 app.use(cookieParse());
 app.use(bodyParser.urlencoded({extended: true}));
 
 
 
-// ANSI escape sequences for colors and styles
+
 const RESET = '\x1b[0m';
 const LIGHT_GREEN = '\x1b[92m';
 const YELLOW = '\x1b[33m';
@@ -24,7 +24,6 @@ const LIGHT_BLUE = '\x1b[94m';
 const RED = '\x1b[31m';
 const GRAYISH = '\x1b[37m';
 
-// Middleware to log incoming requests with colored method and URL
 app.use((req, res, next) => {
     const arrow = `${GRAYISH}==> `;
     const timestamp = new Date().toISOString();
