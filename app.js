@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:3000"],
+    origin: "https://dcloud-nayanprasad.vercel.app",
     credentials: true,
 }));
 app.use(express.json());
