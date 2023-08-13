@@ -10,6 +10,7 @@ app.use(cors({
     origin: "https://dcloud-nayanprasad.vercel.app",
     credentials: true,
 }));
+
 app.use(express.json());
 app.use(cookieParse());
 app.use(bodyParser.urlencoded({extended: true}));
