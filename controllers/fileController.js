@@ -15,7 +15,7 @@ exports.uploadFile = CatchAsyncError(async (req, res, next) => {
     const {cid} = addResult;
 
     const isFileExists = await File.findOne({owner: req.user._id, cid});
-    console.log(isFileExists)
+
     if (isFileExists)
         return next(new ErrorHandler("File already exists", 400));
 
@@ -81,8 +81,6 @@ exports.getFile = async (req, res, next) => {
 }
 
 exports.downloadFile = async (req, res, next) => {
-
-    console.log(req.params)
 
     const id = req.params.cid;
 
@@ -187,8 +185,6 @@ exports.shareFile = CatchAsyncError(async (req, res, next) => {
 
     const owner = await File.findById(id).select("owner");
 
-    console.log(owner)
-
     if (!owner)
         return next(new ErrorHandler("File not found", 404));
 
@@ -267,7 +263,7 @@ exports.deleteFile = CatchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler("You are not authorized to delete this file", 401))
 
     const deleteFile = await File.findByIdAndDelete(id);
-    console.log(deleteFile)
+
     ipfs.pin.rm(deleteFile.cid, (err, pinset) => {
         if (err) {
             res.status(400).json({
