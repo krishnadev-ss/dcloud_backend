@@ -5,18 +5,10 @@ const errorMiddleWare = require("./middleware/error");
 const cors = require("cors");
 
 const app = express();
-
-app.use(cors({
-    origin: "https://dcloud-nayanprasad.vercel.app",
-    credentials: true,
-}));
-
+app.use(cors());
 app.use(express.json());
 app.use(cookieParse());
 app.use(bodyParser.urlencoded({extended: true}));
-
-
-
 
 const RESET = '\x1b[0m';
 const LIGHT_GREEN = '\x1b[92m';
