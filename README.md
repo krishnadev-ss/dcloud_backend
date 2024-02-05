@@ -10,4 +10,4 @@ them. The files are encrypted before uploading to IPFS providing an extra layer 
 files securely and access them from anywhere in the world.
 
 
-## Frontend: [here](https://github.com/nayanprasad/dCloud-frontend)
+## Frontend: [here](https://github.com/krishnadev-ss/dCloud-frontend)
